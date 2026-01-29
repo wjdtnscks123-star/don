@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>로또 번호 추천기 (6/45)</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="bgShapes" aria-hidden="true">
+      <span class="shape circle"></span>
+      <span class="shape triangle"></span>
+      <span class="shape square"></span>
+    </div>
+    <main class="app" aria-label="로또 번호 추천기">
+      <header class="header">
+        <div>
+          <div class="mark" aria-hidden="true">
+            <span class="m circle"></span>
+            <span class="m triangle"></span>
+            <span class="m square"></span>
+          </div>
+          <h1 class="title">로또 번호 추천기</h1>
+          <p class="subtitle">6/45 기준 · 중복 없이 6개 번호를 자동 추천합니다.</p>
+        </div>
+        <div class="badge" aria-label="로또 타입">
+          <span class="badgeText">6/45</span>
+        </div>
+      </header>
+
+      <section class="hero" aria-label="테마 일러스트">
+        <div class="heroCard">
+          <div class="heroText">
+            <div class="heroKicker">ORIGINAL THEME</div>
+            <div class="heroTitle">감시 인형 · 마스크 요원</div>
+            <div class="heroSub">
+              특정 작품의 캐릭터를 복제하지 않고, 분위기만 살린 오리지널 일러스트입니다.
+            </div>
+          </div>
+
+          <div class="heroArt" aria-hidden="true">
+            <!-- Original “watcher doll” (not a copyrighted character) -->
+            <svg class="art" viewBox="0 0 240 240" role="img" aria-label="감시 인형 일러스트">
+              <defs>
+                <linearGradient id="dollGlow" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="rgba(255,57,144,0.55)" />
+                  <stop offset="1" stop-color="rgba(34,212,154,0.35)" />
+                </linearGradient>
+              </defs>
+              <circle cx="120" cy="120" r="108" fill="rgba(0,0,0,0.18)" stroke="rgba(255,57,144,0.35)" stroke-width="2" />
+              <circle cx="120" cy="104" r="58" fill="rgba(243,246,245,0.08)" stroke="rgba(255,255,255,0.16)" stroke-width="2" />
+              <path d="M74 98 C86 60, 154 60, 166 98" fill="none" stroke="url(#dollGlow)" stroke-width="10" stroke-linecap="round" />
+              <circle cx="98" cy="104" r="6" fill="rgba(243,246,245,0.9)" />
+              <circle cx="142" cy="104" r="6" fill="rgba(243,246,245,0.9)" />
+              <circle cx="98" cy="104" r="2" fill="rgba(6,10,8,0.95)" />
+              <circle cx="142" cy="104" r="2" fill="rgba(6,10,8,0.95)" />
+              <path d="M105 132 Q120 142 135 132" fill="none" stroke="rgba(243,246,245,0.55)" stroke-width="3" stroke-linecap="round" />
+              <path d="M92 160 Q120 178 148 160" fill="none" stroke="rgba(255,57,144,0.55)" stroke-width="6" stroke-linecap="round" />
+              <rect x="90" y="160" width="60" height="50" rx="12" fill="rgba(0,0,0,0.16)" stroke="rgba(255,255,255,0.14)" />
+            </svg>
+
+            <!-- Original “masked agent” (generic geometric mask) -->
+            <svg class="art" viewBox="0 0 240 240" role="img" aria-label="마스크 요원 일러스트">
+              <circle cx="120" cy="120" r="108" fill="rgba(0,0,0,0.18)" stroke="rgba(255,57,144,0.35)" stroke-width="2" />
+              <path
+                d="M70 190 C78 140, 80 70, 120 54 C160 70, 162 140, 170 190"
+                fill="rgba(0,0,0,0.22)"
+                stroke="rgba(255,255,255,0.14)"
+                stroke-width="2"
+              />
+              <circle cx="120" cy="110" r="44" fill="rgba(6,10,8,0.75)" stroke="rgba(255,57,144,0.35)" stroke-width="2" />
+              <circle cx="90" cy="105" r="10" fill="none" stroke="rgba(255,57,144,0.85)" stroke-width="3" />
+              <path d="M150 95 L165 125 L135 125 Z" fill="none" stroke="rgba(255,57,144,0.85)" stroke-width="3" />
+              <rect x="102" y="132" width="36" height="22" rx="5" fill="none" stroke="rgba(34,212,154,0.8)" stroke-width="3" />
+              <path d="M86 180 H154" stroke="rgba(243,246,245,0.22)" stroke-width="10" stroke-linecap="round" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="설정">
+        <div class="row">
+          <label class="field">
+            <span class="label">추천 세트 개수</span>
+            <div class="control">
+              <button class="step" id="minusSets" type="button" aria-label="세트 개수 줄이기">−</button>
+              <input
+                id="setCount"
+                class="input"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                max="10"
+                value="5"
+                aria-label="추천 세트 개수"
+              />
+              <button class="step" id="plusSets" type="button" aria-label="세트 개수 늘리기">+</button>
+            </div>
+            <span class="hint">1–10세트</span>
+          </label>
+
+          <label class="field">
+            <span class="label">정렬</span>
+            <select id="sortMode" class="select" aria-label="정렬 방식">
+              <option value="asc" selected>오름차순</option>
+              <option value="none">정렬 안 함</option>
+            </select>
+            <span class="hint">번호 표시 방식</span>
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field grow">
+            <span class="label">포함할 번호 (선택)</span>
+            <input
+              id="includeNumbers"
+              class="input"
+              type="text"
+              placeholder="예: 3, 11, 25"
+              aria-label="포함할 번호 입력"
+            />
+            <span class="hint">쉼표/공백으로 구분 · 최대 6개</span>
+          </label>
+
+          <label class="field grow">
+            <span class="label">제외할 번호 (선택)</span>
+            <input
+              id="excludeNumbers"
+              class="input"
+              type="text"
+              placeholder="예: 7 13 42"
+              aria-label="제외할 번호 입력"
+            />
+            <span class="hint">쉼표/공백으로 구분</span>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="generateBtn" class="btn primary" type="button">추천 받기</button>
+          <button id="copyBtn" class="btn" type="button" disabled>모두 복사</button>
+          <button id="clearBtn" class="btn danger" type="button">기록 비우기</button>
+        </div>
+
+        <div class="notice" role="status" aria-live="polite" id="notice"></div>
+      </section>
+
+      <section class="panel" aria-label="추천 결과">
+        <div class="panelHeader">
+          <h2 class="panelTitle">이번 추천</h2>
+          <div class="panelMeta" id="metaText"></div>
+        </div>
+
+        <ol class="results" id="results" aria-label="추천 번호 목록"></ol>
+      </section>
+
+      <section class="panel" aria-label="추천 기록">
+        <div class="panelHeader">
+          <h2 class="panelTitle">최근 기록</h2>
+          <div class="panelMeta">브라우저에 저장됩니다.</div>
+        </div>
+
+        <ul class="history" id="history" aria-label="추천 기록 목록"></ul>
+      </section>
+
+      <footer class="footer">
+        <span>Made for quick picks · 로또는 재미로만!</span>
+      </footer>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

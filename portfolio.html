@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>포트폴리오 설계(교육용) · 목표 연수익률 15%</title>
+    <link rel="stylesheet" href="./portfolio.css" />
+  </head>
+  <body>
+    <main class="app" aria-label="포트폴리오 설계 도구">
+      <header class="header">
+        <div>
+          <h1 class="title">포트폴리오 설계 (교육용)</h1>
+          <p class="subtitle">
+            목표 연수익률(예: 15%)을 “보장”하지 않습니다. 입력한 가정(기대수익률/변동성/상관관계)을 기준으로
+            가능한 비중을 탐색합니다.
+          </p>
+        </div>
+        <div class="badge" aria-label="주의">Not financial advice</div>
+      </header>
+
+      <section class="panel" aria-label="가정과 설정">
+        <div class="grid">
+          <label class="field">
+            <span class="label">목표 연수익률</span>
+            <div class="inline">
+              <input id="targetReturn" class="input" type="number" step="0.1" value="15" />
+              <span class="unit">%</span>
+            </div>
+            <span class="hint">목표는 “가능성 탐색용”입니다.</span>
+          </label>
+
+          <label class="field">
+            <span class="label">무위험 수익률(샤프 계산용)</span>
+            <div class="inline">
+              <input id="rfRate" class="input" type="number" step="0.1" value="3" />
+              <span class="unit">%</span>
+            </div>
+            <span class="hint">예: 단기 국채/예금 수준</span>
+          </label>
+
+          <label class="field">
+            <span class="label">상관관계 강도</span>
+            <input id="corrScale" class="range" type="range" min="0" max="1" step="0.05" value="1" />
+            <span class="hint">0 = 상관 0에 가깝게, 1 = 기본값 그대로</span>
+          </label>
+
+          <label class="field">
+            <span class="label">시나리오 프리셋</span>
+            <select id="preset" class="select">
+              <option value="balanced" selected>기본(중립)</option>
+              <option value="bull">강세(주식 수익↑)</option>
+              <option value="bear">약세(주식 수익↓)</option>
+            </select>
+            <span class="hint">프리셋은 시작점일 뿐, 아래 표에서 수정 가능</span>
+          </label>
+
+          <label class="field">
+            <span class="label">탐색 횟수(랜덤 포트폴리오)</span>
+            <select id="trials" class="select">
+              <option value="20000">20,000</option>
+              <option value="50000" selected>50,000</option>
+              <option value="100000">100,000</option>
+              <option value="200000">200,000</option>
+            </select>
+            <span class="hint">횟수↑ = 정확도↑ / 느려짐</span>
+          </label>
+
+          <label class="field">
+            <span class="label">제약</span>
+            <select id="constraints" class="select">
+              <option value="long_only" selected>롱온리(0~100%, 합=100%)</option>
+              <option value="capped">롱온리 + 개별 최대 60%</option>
+            </select>
+            <span class="hint">공매도/레버리지는 제외</span>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="runBtn" class="btn primary" type="button">포트폴리오 찾기</button>
+          <button id="copyBtn" class="btn" type="button" disabled>추천 비중 복사</button>
+          <button id="resetBtn" class="btn" type="button">기본값으로</button>
+        </div>
+
+        <div class="notice" role="status" aria-live="polite" id="notice"></div>
+      </section>
+
+      <section class="panel" aria-label="자산 가정 입력">
+        <div class="panelHeader">
+          <h2 class="panelTitle">자산 가정(수정 가능)</h2>
+          <div class="panelMeta">기대수익률(%)과 변동성(연, %)을 입력하세요. 티커(선택)도 함께 적을 수 있어요.</div>
+        </div>
+
+        <div class="quickAdd" aria-label="대표 종목/ETF 빠른 추가">
+          <label class="field">
+            <span class="label">대표 종목/ETF 추가</span>
+            <div class="quickAddRow">
+              <select id="quickAddSelect" class="select" aria-label="대표 종목/ETF 목록"></select>
+              <button id="quickAddBtn" class="btn" type="button">표에 추가</button>
+            </div>
+            <span class="hint">추가 후에도 기대수익률/변동성은 원하는 값으로 수정하세요.</span>
+          </label>
+        </div>
+
+        <div class="tableWrap" role="region" aria-label="자산 가정 표" tabindex="0">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>사용</th>
+                <th>자산명</th>
+                <th>티커/코드</th>
+                <th>유형</th>
+                <th>기대수익률(%)</th>
+                <th>변동성(%)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="assetBody"></tbody>
+          </table>
+        </div>
+
+        <div class="actions">
+          <button id="addAssetBtn" class="btn" type="button">자산 추가</button>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="결과">
+        <div class="panelHeader">
+          <h2 class="panelTitle">추천 결과(탐색 기반)</h2>
+          <div class="panelMeta" id="resultMeta"></div>
+        </div>
+
+        <div class="resultGrid">
+          <div class="card">
+            <div class="cardTitle">추천 비중</div>
+            <div id="alloc" class="alloc" aria-label="추천 비중 리스트"></div>
+          </div>
+
+          <div class="card">
+            <div class="cardTitle">지표</div>
+            <div class="metrics" id="metrics"></div>
+          </div>
+
+          <div class="card span2">
+            <div class="cardTitle">리스크(변동성) vs 기대수익률</div>
+            <canvas id="chart" width="820" height="420" aria-label="산점도 차트"></canvas>
+            <div class="chartHint">점은 랜덤으로 생성한 후보 포트폴리오들입니다. 강조된 점이 추천안입니다.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="면책">
+        <h2 class="panelTitle">중요 안내</h2>
+        <ul class="disclaimer">
+          <li>이 도구는 <strong>투자자문이 아니며</strong>, 연 15% 수익을 보장하지 않습니다.</li>
+          <li>결과는 입력한 가정(기대수익률/변동성/상관관계)과 랜덤 탐색에 의해 달라집니다.</li>
+          <li>실제 투자 전에는 수수료/세금/환율/리밸런싱/손실 가능성 등을 반드시 고려하세요.</li>
+        </ul>
+      </section>
+
+      <footer class="footer">
+        <span>Offline · Single-page · No tracking</span>
+      </footer>
+    </main>
+
+    <script src="./portfolio.js"></script>
+  </body>
+</html>

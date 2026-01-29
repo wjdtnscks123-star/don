@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>점심 메뉴 카테고리 추천</title>
+    <link rel="stylesheet" href="./lunch.css" />
+  </head>
+  <body>
+    <main class="app" aria-label="점심 메뉴 카테고리 추천">
+      <header class="header">
+        <div>
+          <h1 class="title">점심 메뉴 카테고리 추천</h1>
+          <p class="subtitle">상황에 맞춰 카테고리를 골라드려요. (메뉴명 대신 “종류” 추천)</p>
+        </div>
+        <div class="pill" aria-label="팁">랜덤 + 필터</div>
+      </header>
+
+      <section class="panel" aria-label="필터">
+        <div class="grid">
+          <label class="field">
+            <span class="label">예산</span>
+            <select id="budget" class="select" aria-label="예산 선택">
+              <option value="any" selected>상관없음</option>
+              <option value="low">저렴(∼ 9천)</option>
+              <option value="mid">보통(1만대)</option>
+              <option value="high">여유(2만+)</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="label">시간</span>
+            <select id="time" class="select" aria-label="시간 선택">
+              <option value="any" selected>상관없음</option>
+              <option value="fast">빨리(30분 내)</option>
+              <option value="normal">보통</option>
+              <option value="slow">여유롭게</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="label">매운맛</span>
+            <select id="spice" class="select" aria-label="매운맛 선택">
+              <option value="any" selected>상관없음</option>
+              <option value="no">안 매운 걸로</option>
+              <option value="yes">매운 것도 OK</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="label">식단</span>
+            <select id="diet" class="select" aria-label="식단 선택">
+              <option value="any" selected>상관없음</option>
+              <option value="vegetarian">채식 위주</option>
+              <option value="high_protein">단백질 위주</option>
+              <option value="light">가볍게</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid">
+          <label class="field grow">
+            <span class="label">기피 재료/키워드 (선택)</span>
+            <input id="avoid" class="input" type="text" placeholder="예: 고수, 내장, 땅콩, 유제품" />
+            <span class="hint">쉼표/공백 구분. 해당 키워드가 포함된 카테고리를 제외해요.</span>
+          </label>
+
+          <label class="field">
+            <span class="label">추천 강도</span>
+            <select id="mode" class="select" aria-label="추천 방식">
+              <option value="balanced" selected>밸런스</option>
+              <option value="adventurous">모험(다양성↑)</option>
+              <option value="safe">무난(대중적↑)</option>
+            </select>
+            <span class="hint">자주 먹는 것만 vs 새로움</span>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="pickBtn" class="btn primary" type="button">오늘 점심 추천</button>
+          <button id="rerollBtn" class="btn" type="button" disabled>다시 추천</button>
+          <button id="copyBtn" class="btn" type="button" disabled>결과 복사</button>
+          <button id="clearBtn" class="btn danger" type="button">기록 비우기</button>
+        </div>
+
+        <div class="notice" id="notice" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="panel" aria-label="추천 결과">
+        <div class="panelHeader">
+          <h2 class="panelTitle">오늘의 추천</h2>
+          <div class="panelMeta" id="meta"></div>
+        </div>
+
+        <div class="result">
+          <div class="card big" id="mainCard" aria-label="메인 추천 카드">
+            <div class="cardTop">
+              <div class="chip" id="mainChip">—</div>
+              <div class="cardActions">
+                <button id="favBtn" class="miniBtn" type="button" disabled>즐겨찾기</button>
+                <a id="searchLink" class="miniBtn link" href="#" target="_blank" rel="noopener">주변 검색</a>
+              </div>
+            </div>
+            <div class="cardTitle" id="mainTitle">추천을 눌러주세요</div>
+            <div class="cardDesc" id="mainDesc">예산/시간/식단/기피재료 필터를 적용할 수 있어요.</div>
+            <div class="tags" id="mainTags"></div>
+            <div class="examples" id="mainExamples"></div>
+          </div>
+
+          <div class="side">
+            <div class="sideTitle">대안 3개</div>
+            <div class="altList" id="alts"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="최근 기록과 즐겨찾기">
+        <div class="twoCol">
+          <div>
+            <div class="panelHeader">
+              <h2 class="panelTitle">최근 추천</h2>
+              <div class="panelMeta">브라우저에 저장됩니다.</div>
+            </div>
+            <ul class="list" id="history"></ul>
+          </div>
+
+          <div>
+            <div class="panelHeader">
+              <h2 class="panelTitle">즐겨찾기</h2>
+              <div class="panelMeta">자주 먹는 카테고리 모아두기</div>
+            </div>
+            <ul class="list" id="favs"></ul>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>Tip: “주변 검색”은 브라우저 검색을 엽니다.</span>
+      </footer>
+    </main>
+
+    <script src="./lunch.js"></script>
+  </body>
+</html>
