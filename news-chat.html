@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>뉴스 요약 챗봇</title>
+    <link rel="stylesheet" href="./news-chat.css" />
+  </head>
+  <body>
+    <main class="app" aria-label="뉴스 요약 챗봇">
+      <header class="header">
+        <h1 class="title">뉴스 요약 챗봇</h1>
+        <p class="subtitle">키워드를 입력하면 관련 뉴스 10개를 찾아 요약해 드려요.</p>
+        <p class="status" id="serverStatus">서버 확인 중…</p>
+      </header>
+
+      <section class="chat" aria-label="대화">
+        <div class="messages" id="messages">
+          <div class="msg bot" role="article">
+            <div class="avatar">봇</div>
+            <div class="bubble">
+              안녕하세요. 궁금한 키워드를 입력해 주세요. 예: <strong>인공지능</strong>, <strong>주식</strong>, <strong>날씨</strong>
+              <br /><br />
+              뉴스 검색은 <strong>Enter</strong>, 뉴스로 대화 질문은 <strong>Shift + Enter</strong>
+            </div>
+          </div>
+        </div>
+
+        <form class="inputRow" id="form" aria-label="메시지 입력">
+          <input
+            id="input"
+            class="input"
+            type="text"
+            placeholder="키워드 Enter / 기사 질문 Shift+Enter"
+            autocomplete="off"
+            aria-label="키워드"
+          />
+          <button type="submit" class="btn" id="sendBtn">검색</button>
+        </form>
+      </section>
+
+      <footer class="footer">
+        <span>뉴스 API 기반 · 서버 실행 필요</span>
+        <span> · </span>
+        <a href="/api/test-gemini" target="_blank" rel="noopener" class="footerLink">Gemini 키 확인</a>
+      </footer>
+    </main>
+    <script src="./news-chat.js"></script>
+  </body>
+</html>
